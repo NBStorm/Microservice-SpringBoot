@@ -21,10 +21,10 @@ public class ProductServiceImpl implements ProductService {
     public long addProduct(ProductRequest productRequest) {
         Product product
                 = Product.builder()
-                        .productName(productRequest.getName())
-                                .price(productRequest.getPrice())
-                                        .quantity(productRequest.getQuantity())
-                                                .build();
+                .productName(productRequest.getName())
+                .price(productRequest.getPrice())
+                .quantity(productRequest.getQuantity())
+                .build();
 
         productRepository.save(product);
         return product.getProductId();
