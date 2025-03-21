@@ -11,3 +11,15 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
       ddl-auto: update
+  application:
+    name: PRODUCT-SERVICE
+
+eureka:
+  instance:
+    prefer-ip-address: true  # Sử dụng IP thay vì hostname khi đăng ký với Eureka
+  client:
+    fetch-registry: true      # Cho phép lấy danh sách service từ Eureka Server
+    register-with-eureka: true # Cho phép đăng ký service vào Eureka Server
+    service-url:
+      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
+
