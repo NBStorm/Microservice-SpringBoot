@@ -13,12 +13,55 @@ spring:
       ddl-auto: update
   application:
     name: ORDER-SERVICE
+  config:
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:9296}
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            product-service:
+              - uri: http://product-service:8080
+            payment-service:
+              - uri: http://product-service:8083
+    loadbalancer:
+      enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # B·∫≠t to√†n b·ªô actuator endpoints
+  tracing:
+    sampling:
+      probability: 1.0  # Thu th·∫≠p 100% request
+  zipkin:
+    tracing:
+      endpoint: http://127.0.0.1:9411/api/v2/spans
 
-eureka:
-  instance:
-    prefer-ip-address: true  # S? d?ng IP thay vÏ hostname khi ??ng k˝ v?i Eureka
+feign:
   client:
-    fetch-registry: true      # Cho phÈp l?y danh s·ch service t? Eureka Server
-    register-with-eureka: true # Cho phÈp ??ng k˝ service v‡o Eureka Server
-    service-url:
-      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full  # Log Feign request/response
+  loadbalancer:
+    enabled: true  # Quan tr·ªçng! B·∫≠t LoadBalancer ƒë·ªÉ gi·ªØ traceId
+
+logging:
+  level:
+    org.springframework.cloud.openfeign: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
+    io.micrometer.tracing: DEBUG
+    reactor.netty.http.client: DEBUG
+
+
+
+#eureka:
+#  instance:
+#    prefer-ip-address: true  # S? d?ng IP thay vÔøΩ hostname khi ??ng kÔøΩ v?i Eureka
+#  client:
+#    fetch-registry: true      # Cho phÔøΩp l?y danh sÔøΩch service t? Eureka Server
+#    register-with-eureka: true # Cho phÔøΩp ??ng kÔøΩ service vÔøΩo Eureka Server
+#    service-url:
+#      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}

@@ -13,13 +13,51 @@ spring:
       ddl-auto: update
   application:
     name: PRODUCT-SERVICE
+  config:
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:9296}
+  cloud:
+    discovery:
+      client:
+        simple:
+          instances:
+            order-service:
+              - uri: http://order-service:8082
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # Bật toàn bộ actuator endpoints
+  tracing:
+    sampling:
+      probability: 1.0  # Thu thập 100% request
+  zipkin:
+    tracing:
+      endpoint: http://127.0.0.1:9411/api/v2/spans
 
-eureka:
-  instance:
-    prefer-ip-address: true  # Sử dụng IP thay vì hostname khi đăng ký với Eureka
+feign:
   client:
-    fetch-registry: true      # Cho phép lấy danh sách service từ Eureka Server
-    register-with-eureka: true # Cho phép đăng ký service vào Eureka Server
-    service-url:
-      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full  # Log Feign request/response
+  loadbalancer:
+    enabled: true  # Quan trọng! Bật LoadBalancer để giữ traceId
+
+logging:
+  level:
+    org.springframework.cloud.openfeign: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
+    io.micrometer.tracing: DEBUG
+    reactor.netty.http.client: DEBUG
+
+
+#eureka:
+#  instance:
+#    prefer-ip-address: true  # Sử dụng IP thay vì hostname khi đăng ký với Eureka
+#  client:
+#    fetch-registry: true      # Cho phép lấy danh sách service từ Eureka Server
+#    register-with-eureka: true # Cho phép đăng ký service vào Eureka Server
+#    service-url:
+#      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
 
